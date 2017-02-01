@@ -1,0 +1,3 @@
+cockroachdb:
+  download_url: https://binaries.cockroachdb.com/cockroach-latest.linux-amd64.tgz
+  home_dir: /opt/cockroachdb

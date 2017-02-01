@@ -1,0 +1,2 @@
+{% import_yaml 'cockroachdb/default.yml' as default_config %}
+{% set config = salt['pillar.get']('cockroachdb', default=default_config.cockroachdb, merge=True) %}
