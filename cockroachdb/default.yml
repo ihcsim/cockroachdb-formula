@@ -3,3 +3,5 @@ cockroachdb:
   home_dir: /opt/cockroachdb
   user: cockroach
   group: cockroach
+  dbuser: maxroach
+  database: roach_sandbox
