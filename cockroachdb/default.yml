@@ -3,5 +3,10 @@ cockroachdb:
   home_dir: /opt/cockroachdb
   user: cockroach
   group: cockroach
-  dbuser: maxroach
-  database: roach_sandbox
+  initdb:
+    dbuser: maxroach
+    database: roach_sandbox
+
+    # Set to true to keep the user-provided initdb.sql script.
+    # This script is executed on restart, so it must not failed.
+    keep_initdb_sql: false

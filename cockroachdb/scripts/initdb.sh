@@ -10,6 +10,20 @@ until {{ config.home_dir }}/cockroach sql --insecure --execute='SELECT 1'; do
   sleep 2
 done
 
-{{ config.home_dir }}/cockroach user set {{ config.dbuser }}
-{{ config.home_dir }}/cockroach sql -e 'CREATE DATABASE {{ config.database }} IF NOT EXISTS'
-{{ config.home_dir }}/cockroach sql -e 'GRANT ALL ON DATABASE {{ config.database }} TO {{ config.dbuser }}'
+{{ config.home_dir }}/cockroach user set {{ config.initdb.dbuser }}
+{{ config.home_dir }}/cockroach sql -e 'CREATE DATABASE IF NOT EXISTS {{ config.initdb.database }}'
+{{ config.home_dir }}/cockroach sql -e 'GRANT ALL ON DATABASE {{ config.initdb.database }} TO {{ config.initdb.dbuser }}'
+
+# If present, executes user-provided initdb.sql.
+# This script is then removed to avoid duplication on restart.
+if [ -e "{{ config.home_dir }}/initdb.sql" ];
+then
+  echo "Executing {{ config.home_dir }}/initdb.sql..."
+  {{ config.home_dir }}/cockroach sql --user {{ config.initdb.dbuser }} --database {{ config.initdb.database }} < {{ config.home_dir }}/initdb.sql
+
+  if [ {{ config.initdb.keep_initdb_sql }} == 'false' ];
+  then
+    echo "Removing {{ config.home_dir }}/initdb.sql..."
+    rm -f {{ config.home_dir }}/initdb.sql
+  fi
+fi

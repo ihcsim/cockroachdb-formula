@@ -5,15 +5,6 @@
 include:
   - cockroachdb/user
 
-cockroachdb_service:
-  service.running:
-    - name: cockroachdb
-    - enable: True
-    - require:
-      - cockroachdb_install
-    - watch:
-      - cockroachdb_unit_file
-
 cockroachdb_install:
   archive.extracted:
     - name: {{ config.home_dir }}
@@ -26,6 +17,22 @@ cockroachdb_install:
     - skip_verify: True
     - makedirs: True
 
+cockroachdb_initdb_sh:
+  file.managed:
+    - name: {{ config.home_dir }}/initdb.sh
+    - source: salt://cockroachdb/scripts/initdb.sh
+    - template: jinja
+    - user: {{ config.user }}
+    - group: {{ config.group }}
+    - mode: 0755
+
+cockroachdb_initdb_sql:
+  file.managed:
+    - name: {{ config.home_dir }}/initdb.sql
+    - source: salt://cockroachdb/scripts/initdb.sql
+    - user: {{ config.user }}
+    - group: {{ config.group }}
+
 cockroachdb_unit_file:
   file.managed:
     - name: /etc/systemd/system/cockroachdb.service
@@ -34,11 +41,10 @@ cockroachdb_unit_file:
     - group: {{ config.group }}
     - template: jinja
 
-cockroachdb_initdb:
-  file.managed:
-    - name: {{ config.home_dir }}/initdb.sh
-    - source: salt://cockroachdb/scripts/initdb.sh
-    - template: jinja
-    - user: {{ config.user }}
-    - group: {{ config.group }}
-    - mode: 0755
+cockroachdb_service:
+  service.running:
+    - name: cockroachdb
+    - enable: True
+    - watch:
+      - cockroachdb_unit_file
+      - cockroachdb_initdb_sh
