@@ -5,7 +5,10 @@ Description=CockroachDB
 Documentation=https://www.cockroachlabs.com/docs/
 
 [Service]
-ExecStart={{ config.home_dir }}/cockroach start --insecure
+User={{ config.user }}
+ExecStart={{ config.home_dir }}/cockroach start --insecure \
+            --store=path={{ config.home_dir }}/cockroach-data \
+            --log-dir={{ config.home_dir }}/logs
 ExecStartPost={{ config.home_dir }}/initdb.sh
 Restart=always
 RestartSec=10
