@@ -1,4 +1,6 @@
-# This state file ensures that the specified version of CockroachDB is downloaded, extracted, enabled and run.
+# This state file defines the states to ensures that the latest version of CockroachDB is downloaded, extracted, enabled and run.
+# These states also ensure the database super user and its database are present in the CockroachDB.
+# User-provided SQL queries in the initdb.sql script are executed once the CockroachDB is running.
 
 {% from 'cockroachdb/map.jinja' import config with context %}
 
