@@ -21,7 +21,7 @@ then
   echo "Executing {{ config.home_dir }}/initdb.sql..."
   {{ config.home_dir }}/cockroach sql --user {{ config.initdb.dbuser }} --database {{ config.initdb.database }} < {{ config.home_dir }}/initdb.sql
 
-  if [ {{ config.initdb.keep_initdb_sql }} == 'false' ];
+  if [ '{{ config.initdb.keep_initdb_sql }}' == 'False' ];
   then
     echo "Removing {{ config.home_dir }}/initdb.sql..."
     rm -f {{ config.home_dir }}/initdb.sql

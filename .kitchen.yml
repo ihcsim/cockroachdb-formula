@@ -1,0 +1,26 @@
+---
+driver:
+  name: vagrant
+
+platforms:
+  - name: ubuntu/xenial64
+  - name: centos/7
+
+provisioner:
+  name: salt_solo
+  formula: cockroachdb
+  salt_version: 2016.11.2
+  state_top:
+    base:
+      '*':
+        - cockroachdb
+  pillars:
+    top.sls:
+      base:
+        '*':
+          - cockroachdb
+  pillars-from-files:
+    cockroachdb.sls: pillar.example
+
+suites:
+  - name: default
