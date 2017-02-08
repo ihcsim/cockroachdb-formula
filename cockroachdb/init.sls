@@ -19,6 +19,22 @@ cockroachdb_install:
     - skip_verify: True
     - makedirs: True
 
+cockroachdb_data_directory:
+  file.directory:
+    - name: {{ config.datadir }}
+    - user: {{ config.user }}
+    - group: {{ config.group }}
+    - dir_mode: 755
+    - makedirs: True
+
+cockroachdb_log_folder:
+  file.directory:
+    - name: {{ config.logdir }}
+    - user: {{ config.user }}
+    - group: {{ config.group }}
+    - dir_mode: 755
+    - makedirs: True
+
 cockroachdb_initdb_sh:
   file.managed:
     - name: {{ config.home_dir }}/initdb.sh

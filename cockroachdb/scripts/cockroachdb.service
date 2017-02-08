@@ -1,4 +1,9 @@
-{% from 'cockroachdb/map.jinja' import config with context %}
+{% from 'cockroachdb/map.jinja' import config with context -%}
+
+{% set runtime_options = '' %}
+{% if config.runtime_options is defined -%}
+  {% set runtime_options = config.runtime_options | join(' ') -%}
+{% endif -%}
 
 [Unit]
 Description=CockroachDB
@@ -6,9 +11,7 @@ Documentation=https://www.cockroachlabs.com/docs/
 
 [Service]
 User={{ config.user }}
-ExecStart={{ config.home_dir }}/cockroach start --insecure \
-            --store=path={{ config.home_dir }}/cockroach-data \
-            --log-dir={{ config.home_dir }}/logs
+ExecStart={{ config.home_dir }}/cockroach start {{ runtime_options }}
 ExecStartPost={{ config.home_dir }}/initdb.sh
 Restart=always
 RestartSec=10

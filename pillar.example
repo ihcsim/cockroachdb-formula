@@ -7,3 +7,12 @@ cockroachdb:
     # If this script shouldn't be re-executed on restart, set keep_initdb_sql to false to delete it from the minion
     # filesystem after the first start-up.
     keep_initdb_sql: false
+
+  runtime_options:
+    - --insecure=true
+    - --host=192.168.50.11
+    - --port=26300
+    - --http-host=192.168.50.11
+    - --http-port=7070
+    - --store=path=/etc/cockroachdb/data
+    - --log-dir=/var/log/cockroachdb

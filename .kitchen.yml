@@ -1,10 +1,11 @@
 ---
 driver:
   name: vagrant
+  network:
+    - ["private_network", {ip: "192.168.50.11"}]
 
 platforms:
   - name: ubuntu/xenial64
-  - name: centos/7
 
 provisioner:
   name: salt_solo

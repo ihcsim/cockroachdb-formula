@@ -10,8 +10,10 @@ describe 'CockroachDB' do
       it { should be_running }
     end
 
-    context 'Given the pillar data dbuser=devroach and database=devroach_sandbox' do
-      # pillar data used for this test is found in the pillar.example file
+		set :env, :COCKROACH_INSECURE => 'true', :COCKROACH_HOST => '192.168.50.11', :COCKROACH_PORT => '26300'
+
+    # pillar data used for these tests are found in the pillar.example file
+    context 'Given the `dbuser=devroach` and `database=devroach_sandbox` pillar data' do
       describe command('cockroach sql -e "SHOW USERS" --pretty=false') do
         its(:stdout) do
           should contain 'devroach'
@@ -25,16 +27,20 @@ describe 'CockroachDB' do
       end
     end
 
-    context 'Given the pillar data keep_initdb_sql=false' do
-      # pillar data used for this test is found in the pillar.example file
+    context 'Given the `keep_initdb_sql=false` pillar data' do
       describe file('/opt/cockroachdb/initdb.sql') do
         it { should_not exist }
       end
     end
 
-    context 'Given sample customer test data' do
-      # SQL queries used for this test are found in scripts/initdb.sql
+    context 'Given the `runtime_options` pillar data' do
+      describe process('cockroach') do
+        its(:args) { should contain '--insecure=true --host=192.168.50.11 --port=26300 --http-host=192.168.50.11 --http-port=7070 --store=path=/etc/cockroachdb/data --log-dir=/var/log/cockroachdb' }
+      end
+    end
 
+    # SQL queries used for this test are found in scripts/initdb.sql
+    context 'Given sample customer test data' do
       describe command('cockroach sql --user devroach --database devroach_sandbox -e "SHOW TABLES" --pretty=false') do
         its(:stdout) do
           should contain 'customers'
