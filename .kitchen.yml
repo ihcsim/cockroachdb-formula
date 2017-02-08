@@ -15,13 +15,32 @@ provisioner:
     base:
       '*':
         - cockroachdb
-  pillars:
-    top.sls:
-      base:
-        '*':
-          - cockroachdb
-  pillars-from-files:
-    cockroachdb.sls: pillar.example
 
 suites:
+  # use cockroachdb/default.yml as pillar source
   - name: default
+
+  # use pillar.example as pillar source
+  - name: pillar
+    provisioner:
+      pillars:
+        top.sls:
+          base:
+            '*':
+              - cockroachdb
+      pillars-from-files:
+        cockroachdb.sls: pillar.example
+
+  - name: initdb
+    provisioner:
+      pillars:
+        top.sls:
+          base:
+            '*':
+              - initdb
+        initdb.sls:
+          cockroachdb:
+            initdb:
+              dbuser: oldroach
+              database: oldroach_sandbox
+              keep_initdb_sql: true

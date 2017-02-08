@@ -3,23 +3,23 @@ require 'serverspec'
 set :path, '/opt/cockroachdb:$PATH'
 set :backend, :exec
 
-describe 'Pillar source: cockroachdb/default.yml' do
+describe 'Pillar source: pillar.example' do
   describe service('cockroachdb') do
     it { should be_enabled }
     it { should be_running }
   end
 
-  set :env, :COCKROACH_INSECURE => 'true', :COCKROACH_HOST => 'localhost', :COCKROACH_PORT => '26257'
+  set :env, :COCKROACH_INSECURE => 'true', :COCKROACH_HOST => '192.168.50.11', :COCKROACH_PORT => '26300'
 
-  context 'Given dbuser: maxroach' do
+  context 'Given dbuser: devroach' do
     describe command('cockroach sql -e "SHOW USERS" --pretty=false') do
-      its(:stdout) { should contain 'maxroach' }
+      its(:stdout) { should contain 'devroach' }
     end
   end
 
-  context 'Given database: roach_sandbox' do
+  context 'Given database: devroach' do
     describe command('cockroach sql -e "SHOW DATABASES" --pretty=false') do
-      its(:stdout) { should contain 'maxroach_sandbox' }
+      its(:stdout) { should contain 'devroach_sandbox' }
     end
   end
 
@@ -31,15 +31,15 @@ describe 'Pillar source: cockroachdb/default.yml' do
 
   context 'Given a list of runtime_options' do
     describe process('cockroach') do
-      its(:args) { should contain '--insecure=true --host=localhost --port=26257 --store=path=/opt/cockroachdb/data --log-dir=/opt/cockroachdb/log' }
+      its(:args) { should contain '--insecure=true --host=192.168.50.11 --port=26300 --http-host=192.168.50.11 --http-port=7070 --store=path=/etc/cockroachdb/data --log-dir=/var/log/cockroachdb' }
     end
 
-    describe file('/opt/cockroachdb/data') do
+    describe file('/etc/cockroachdb/data') do
       it { should be_a_directory }
       it { should be_owned_by 'cockroach' }
     end
 
-    describe file('/opt/cockroachdb/log') do
+    describe file('/var/log/cockroachdb') do
       it { should be_a_directory }
       it { should be_owned_by 'cockroach' }
     end

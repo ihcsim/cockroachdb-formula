@@ -11,7 +11,7 @@
     {% elif '--log-dir' in option %}
       {% do tmpdict.update({'logdir': option[10:]}) %}
     {% elif '--host' in option %}
-      {% do tmpdict.update({'dbhost': option[6:]}) %}
+      {% do tmpdict.update({'dbhost': option[7:]}) %}
     {% elif '--port' in option %}
       {% do tmpdict.update({'dbport': option[7:]}) %}
     {% endif %}

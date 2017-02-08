@@ -48,14 +48,24 @@ TBD
 
 Testing
 =======
-Testing is done using `salt-kitchen <https://github.com/simonmcc/kitchen-salt>`_ and `serverspec <http://serverspec.org/>`_. These libraries will need to be installed before running the tests.
-
-To run the test:
+Testing is done using `salt-kitchen <https://github.com/simonmcc/kitchen-salt>`_ and `serverspec <http://serverspec.org/>`_. These libraries will need to be installed before running the tests. To run the test:
 
 .. code:: sh
 
   $ bundle install
   $ kitchen test
+
+Here's a summary of the test suites:
+
++--------------+-------------------------------------------------+-----------------------------+
+| Test Suites  | Description                                     | Paths                       |
++--------------+-------------------------------------------------+-----------------------------+
+| ``default``  | Use ``cockroachdb/default.yml`` as pillar source| ``test/integration/default``|
++--------------+-------------------------------------------------+-----------------------------+
+| ``pillar``   | Use ``pillar.example`` as pillar source         | ``test/integration/pillar`` |
++--------------+-------------------------------------------------+-----------------------------+
+| ``initdb``   | Test initdb behaviour                           | ``test/integration/initdb`` |
++--------------+-------------------------------------------------+-----------------------------+
 
 ``kitchen test`` is the meta-action that automates all the end-to-end test actions. To speed up the development test-code-verify cycle, use the ``converge`` and ``verify`` actions:
 

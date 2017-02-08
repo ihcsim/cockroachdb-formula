@@ -7,14 +7,17 @@ cockroachdb:
 
   initdb:
     dbuser: maxroach
-    database: roach_sandbox
+    database: maxroach_sandbox
 
     # Set keep_initdb_sql to true to keep the user-provided scripts/initdb.sql script after the first start-up.
     # If this script shouldn't be re-executed on restart, set keep_initdb_sql to false to delete it from the minion
     # filesystem after the first start-up.
     keep_initdb_sql: false
 
+  # these are the required runtime options
   runtime_options:
     - --insecure=true
+    - --host=localhost
+    - --port=26257
     - --store=path=/opt/cockroachdb/data
     - --log-dir=/opt/cockroachdb/log
