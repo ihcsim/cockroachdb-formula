@@ -1,3 +1,12 @@
+{% set ipv4_public = '127.0.0.1' -%}
+{% if salt.network.ipaddrs(type='public') | length > 0 -%}
+  {% set ipv4_public = salt.network.ipaddrs(type='public') | first -%}
+{% endif -%}
+
+{% set ipv4_private = '127.0.0.1' -%}
+{% if salt.network.ipaddrs(type='private') | length > 0 -%}
+  {% set ipv4_private = salt.network.ipaddrs(type='private') | first -%}
+{% endif -%}
 cockroachdb:
   initdb:
     dbuser: devroach
@@ -10,9 +19,9 @@ cockroachdb:
 
   runtime_options:
     - --insecure=true
-    - --host=192.168.50.11
+    - --host={{ ipv4_private }}
     - --port=26300
-    - --http-host=192.168.50.11
+    - --http-host={{ ipv4_public }}
     - --http-port=7070
     - --store=path=/etc/cockroachdb/data
     - --log-dir=/var/log/cockroachdb

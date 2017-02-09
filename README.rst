@@ -1,7 +1,7 @@
 ===========
 CockroachDB
 ===========
-.. image:: https://app.codeship.com/projects/891b89d0-cb37-0134-f284-7288c1c90a91/status?branch=master :target: https://app.codeship.com/projects/199837)
+.. image:: https://app.codeship.com/projects/94529550-d1e9-0134-7c93-0275da32878f/status?branch=master :target: https://app.codeship.com/projects/201690)
 
 Formula to install and configure `CockroachDB <https://github.com/cockroachdb/cockroach>`_.
 
@@ -41,10 +41,6 @@ All the `start command <https://www.cockroachlabs.com/docs/start-a-node.html>`_ 
 SQL queries that are added to the ``cockroachdb/scripts/initdb.sql`` script will automatically be executed as ``dbuser`` in the ``database`` on-start. If present on the minion's filesystem, this script will be re-executed when CockroachDB is restarted. Therefore, if it isn't safe to re-execute the SQL queries in this script, set the ``keep_initdb_sql`` pillar data to ``false`` (as seen in the ``pillar.example``) file to ensure that this file is deleted after first-run.
 
 The ``cockroachdb/scripts/default.yml`` file contains a set of default values including URL to download the latest CockroachDB binary and user to run the CockroachDB service. These values can be overridden using pillar data.
-
-``cockroachdb.docker``
----------------------
-TBD
 
 Testing
 =======

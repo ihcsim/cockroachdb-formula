@@ -1,8 +1,25 @@
 ---
+<%
+driver_vagrant = 'vagrant'
+driver_digitalocean = 'digitalocean'
+
+if ENV['KITCHEN_CI']
+  driver = driver_digitalocean
+else
+  driver = driver_vagrant
+end
+%>
+
 driver:
-  name: vagrant
+  name: <%= driver %>
+  <% if driver == driver_vagrant %>
   network:
     - ["private_network", {ip: "192.168.50.11"}]
+  <% elsif driver == driver_digitalocean %>
+  region: sfo1
+  size: 1gb
+  image: ubuntu-16-04-x64
+  <% end %>
 
 platforms:
   - name: ubuntu/xenial64
