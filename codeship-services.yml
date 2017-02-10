@@ -1,0 +1,10 @@
+kitchen_salt_with_digitalocean_driver:
+  build:
+    context: .
+    image: kitchen-salt-do
+    dockerfile: Dockerfile
+  environment:
+    KITCHEN_CI: true
+  encrypted_env_file: ci/cloud.env.encrypted
+  add_docker: true
+  cached: true

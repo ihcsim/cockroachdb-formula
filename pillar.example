@@ -1,0 +1,27 @@
+{% set ipv4_public = '127.0.0.1' -%}
+{% if salt.network.ipaddrs(type='public') | length > 0 -%}
+  {% set ipv4_public = salt.network.ipaddrs(type='public') | first -%}
+{% endif -%}
+
+{% set ipv4_private = '127.0.0.1' -%}
+{% if salt.network.ipaddrs(type='private') | length > 0 -%}
+  {% set ipv4_private = salt.network.ipaddrs(type='private') | first -%}
+{% endif -%}
+cockroachdb:
+  initdb:
+    dbuser: devroach
+    database: devroach_sandbox
+
+    # Set keep_initdb_sql to true to keep the user-provided scripts/initdb.sql script after the first start-up.
+    # If this script shouldn't be re-executed on restart, set keep_initdb_sql to false to delete it from the minion
+    # filesystem after the first start-up.
+    keep_initdb_sql: false
+
+  runtime_options:
+    - --insecure=true
+    - --host={{ ipv4_private }}
+    - --port=26300
+    - --http-host={{ ipv4_public }}
+    - --http-port=7070
+    - --store=path=/etc/cockroachdb/data
+    - --log-dir=/var/log/cockroachdb

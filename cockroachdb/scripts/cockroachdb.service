@@ -1,0 +1,21 @@
+{% from 'cockroachdb/map.jinja' import config with context -%}
+
+{% set runtime_options = '' %}
+{% if config.runtime_options is defined -%}
+  {% set runtime_options = config.runtime_options | join(' ') -%}
+{% endif -%}
+
+[Unit]
+Description=CockroachDB
+Documentation=https://www.cockroachlabs.com/docs/
+
+[Service]
+User={{ config.user }}
+ExecStart={{ config.home_dir }}/cockroach start {{ runtime_options }}
+ExecStartPost={{ config.home_dir }}/initdb.sh
+Restart=always
+RestartSec=10
+TimeoutSec=10
+
+[Install]
+WantedBy=multi-user.target

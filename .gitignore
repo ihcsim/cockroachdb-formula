@@ -1,0 +1,4 @@
+*.swp
+.kitchen
+ci/cloud.env
+ci/codeship.aes

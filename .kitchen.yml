@@ -1,0 +1,63 @@
+---
+<%
+driver_vagrant = 'vagrant'
+driver_digitalocean = 'digitalocean'
+
+if ENV['KITCHEN_CI']
+  driver = driver_digitalocean
+else
+  driver = driver_vagrant
+end
+%>
+
+driver:
+  name: <%= driver %>
+  <% if driver == driver_vagrant %>
+  network:
+    - ["private_network", {ip: "192.168.50.11"}]
+  <% elsif driver == driver_digitalocean %>
+  region: sfo1
+  size: 1gb
+  image: ubuntu-16-04-x64
+  <% end %>
+
+platforms:
+  - name: ubuntu/xenial64
+
+provisioner:
+  name: salt_solo
+  formula: cockroachdb
+  salt_version: 2016.11.2
+  state_top:
+    base:
+      '*':
+        - cockroachdb
+
+suites:
+  # use cockroachdb/default.yml as pillar source
+  - name: default
+
+  # use pillar.example as pillar source
+  - name: pillar
+    provisioner:
+      pillars:
+        top.sls:
+          base:
+            '*':
+              - cockroachdb
+      pillars-from-files:
+        cockroachdb.sls: pillar.example
+
+  - name: initdb
+    provisioner:
+      pillars:
+        top.sls:
+          base:
+            '*':
+              - initdb
+        initdb.sls:
+          cockroachdb:
+            initdb:
+              dbuser: oldroach
+              database: oldroach_sandbox
+              keep_initdb_sql: true

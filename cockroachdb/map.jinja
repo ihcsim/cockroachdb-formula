@@ -1,0 +1,25 @@
+{% import_yaml 'cockroachdb/default.yml' as default_config %}
+{% set config = salt['pillar.get']('cockroachdb', default=default_config.cockroachdb, merge=True) %}
+
+{% set tmpdict = {} %}
+{% if config.runtime_options is defined %}
+  {% for option in config.runtime_options %}
+    {% if '--insecure' in option %}
+      {% do tmpdict.update({'insecure': option[11:]}) %}
+    {% elif '--store' in option %}
+      {% do tmpdict.update({'datadir': option[13:]}) %}
+    {% elif '--log-dir' in option %}
+      {% do tmpdict.update({'logdir': option[10:]}) %}
+    {% elif '--host' in option %}
+      {% do tmpdict.update({'dbhost': option[7:]}) %}
+    {% elif '--port' in option %}
+      {% do tmpdict.update({'dbport': option[7:]}) %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+{% do config.update({'insecure': tmpdict['insecure']}) %}
+{% do config.update({'datadir': tmpdict['datadir']}) %}
+{% do config.update({'logdir': tmpdict['logdir']}) %}
+{% do config.update({'dbhost': tmpdict['dbhost']}) %}
+{% do config.update({'dbport': tmpdict['dbport']}) %}

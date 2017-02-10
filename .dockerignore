@@ -1,0 +1,5 @@
+codeship-services.yml
+codeship-steps.yml
+*.swp
+README.rst
+.git
