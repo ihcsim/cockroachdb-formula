@@ -50,6 +50,10 @@ suites:
 
   - name: initdb
     provisioner:
+      state_top:
+        base:
+          '*':
+            - cockroachdb.initdb
       pillars:
         top.sls:
           base:
@@ -58,6 +62,9 @@ suites:
         initdb.sls:
           cockroachdb:
             initdb:
-              dbuser: oldroach
-              database: oldroach_sandbox
-              keep_initdb_sql: true
+              user: oldroach
+              database: oldroachdb
+
+              sql:
+                script: salt://cockroachdb/files/initdb.sql
+                keep: true

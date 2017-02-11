@@ -17,8 +17,24 @@ Available states
     :local:
 
 ``cockroachdb``
--------------
-This state installs a single instance of CockroachDB on a minion. The following is an example pillar to start a CockroachDB instance with a superuser ``devroach`` and its database ``devroach_sandbox``.
+---------------
+This state installs a single instance of CockroachDB on a minion. All supported runtime options can be passed to the instance using the ``cockroachdb.runtime_options`` pillar. The following pillar starts an insecure CockroachDB instance at localhost:23257, configured to write its data to ``/opt/cockroachdb/data`` and log to ``/opt/cockroachdb/log``.
+
+.. code:: yaml
+
+  cockroachdb:
+    runtime_options:
+      - --insecure=true
+      - --host=localhost
+      - --port=26257
+      - --store=path=/opt/cockroachdb/data
+      - --log-dir=/opt/cockroachdb/log
+
+The ``cockroachdb/scripts/default.yml`` file contains a set of default values that can be overridden using pillar data.
+
+``cockroachdb.initdb``
+----------------------
+This state initialize the CockroachDB instance with a superuser and its database. A user-provided SQL script located at ``cockroachdb.initdb.sql.script`` is executed on-start. The following pillar instructs CockroachDB to create a superuser ``maxroach`` and its database ``maxroachdb`` after the instance is started successfully.
 
 .. code:: yaml
 
@@ -27,21 +43,9 @@ This state installs a single instance of CockroachDB on a minion. The following 
       dbuser: devroach
       database: devroach_sandbox
 
-All the `start command <https://www.cockroachlabs.com/docs/start-a-node.html>`_ options can be specified at runtime using the ``cockroachdb.runtime_options`` pillar. For example, the following pillar will start an insecure CockroachDB instance, listening at IP address 192.168.50.11 and port 23600. Its data and log directories are located at ``/etc/cockroachdb/data`` and ``/var/log/cockroachdb``, respectively.
+An example user-provided SQL script can be found in ``cockroachdb/files/initdb.sql``. This script will automatically be executed as ``cockroachdb.initdb.dbuser`` in ``cockroachdb.initdb.database`` on-start. This script will be re-executed on-restart. The minion can be instructed to delete this SQL script after the first execution using the ``cockroachdn.initdb.sql.keep`` pillar data.
 
-.. code:: yaml
-
-  cockroachdb:
-    runtime_options:
-      - --insecure=true
-      - --host=192.168.50.11
-      - --port=26300
-      - --store=path=/etc/cockroachdb/data
-      - --log-dir=/var/log/cockroachdb
-
-SQL queries that are added to the ``cockroachdb/scripts/initdb.sql`` script will automatically be executed as ``dbuser`` in the ``database`` on-start. If present on the minion's filesystem, this script will be re-executed when CockroachDB is restarted. Therefore, if it isn't safe to re-execute the SQL queries in this script, set the ``keep_initdb_sql`` pillar data to ``false`` (as seen in the ``pillar.example``) file to ensure that this file is deleted after first-run.
-
-The ``cockroachdb/scripts/default.yml`` file contains a set of default values including URL to download the latest CockroachDB binary and user to run the CockroachDB service. These values can be overridden using pillar data.
+The ``pillar.example`` file provides further example.
 
 Testing
 =======

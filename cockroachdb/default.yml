@@ -2,19 +2,13 @@
 cockroachdb:
   download_url: https://binaries.cockroachdb.com/cockroach-latest.linux-amd64.tgz
   home_dir: /opt/cockroachdb
-  user: cockroach
-  group: cockroach
 
-  initdb:
-    dbuser: maxroach
-    database: maxroach_sandbox
+  ps:
+    user: cockroach
+    group: cockroach
+    unit_file_tmpl: salt://cockroachdb/files/cockroachdb.service
+    post_start_tmpl: salt://cockroachdb/files/post_start.sh
 
-    # Set keep_initdb_sql to true to keep the user-provided scripts/initdb.sql script after the first start-up.
-    # If this script shouldn't be re-executed on restart, set keep_initdb_sql to false to delete it from the minion
-    # filesystem after the first start-up.
-    keep_initdb_sql: false
-
-  # these are the required runtime options
   runtime_options:
     - --insecure=true
     - --host=localhost

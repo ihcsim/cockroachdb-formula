@@ -10,9 +10,9 @@ Description=CockroachDB
 Documentation=https://www.cockroachlabs.com/docs/
 
 [Service]
-User={{ config.user }}
+User={{ config.ps.user }}
 ExecStart={{ config.home_dir }}/cockroach start {{ runtime_options }}
-ExecStartPost={{ config.home_dir }}/initdb.sh
+ExecStartPost={{ config.home_dir }}/post_start.sh
 Restart=always
 RestartSec=10
 TimeoutSec=10
