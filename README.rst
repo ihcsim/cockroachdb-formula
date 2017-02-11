@@ -18,7 +18,7 @@ Available states
 
 ``cockroachdb``
 ---------------
-This state installs a single instance of CockroachDB on a minion. All supported runtime options can be passed to the instance using the ``cockroachdb.runtime_options`` pillar. The following pillar starts an insecure CockroachDB instance at localhost:23257, configured to write its data to ``/opt/cockroachdb/data`` and log to ``/opt/cockroachdb/log``.
+This state installs a single instance of CockroachDB on a minion. All supported runtime options can be passed to the instance using the ``cockroachdb.runtime_options`` pillar. The following pillar starts an insecure CockroachDB instance at localhost:26257, configured to write its data to ``/opt/cockroachdb/data`` and logs to ``/opt/cockroachdb/log``.
 
 .. code:: yaml
 
@@ -34,14 +34,17 @@ The ``cockroachdb/scripts/default.yml`` file contains a set of default values th
 
 ``cockroachdb.initdb``
 ----------------------
-This state initialize the CockroachDB instance with a superuser and its database. A user-provided SQL script located at ``cockroachdb.initdb.sql.script`` is executed on-start. The following pillar instructs CockroachDB to create a superuser ``maxroach`` and its database ``maxroachdb`` after the instance is started successfully.
+This state initializes the CockroachDB instance with a user-provided superuser and its database. In addition, a user-provided SQL script located at ``cockroachdb.initdb.sql.script`` is executed on-start. The following pillar instructs CockroachDB to create a superuser ``maxroach`` and its database ``maxroachdb`` after the instance is started successfully. Any SQL queries provided at ``cockroachdb/files/queries.sql`` will be also run after the instance is ready.
 
 .. code:: yaml
 
   cockroachdb:
     initdb:
-      dbuser: devroach
-      database: devroach_sandbox
+      dbuser: maxroach
+      database: maxroachdb
+      
+      sql:
+        script: salt://cockroachdb/files/queries.sql
 
 An example user-provided SQL script can be found in ``cockroachdb/files/initdb.sql``. This script will automatically be executed as ``cockroachdb.initdb.dbuser`` in ``cockroachdb.initdb.database`` on-start. This script will be re-executed on-restart. The minion can be instructed to delete this SQL script after the first execution using the ``cockroachdn.initdb.sql.keep`` pillar data.
 
