@@ -1,6 +1,4 @@
 # This state file defines the states to ensures that the latest version of CockroachDB is downloaded, extracted, enabled and run.
-# These states also ensure the database super user and its database are present in the CockroachDB.
-# User-provided SQL queries in the initdb.sql script are executed once the CockroachDB is running.
 
 {% from 'cockroachdb/map.jinja' import config with context %}
 
@@ -13,56 +11,48 @@ cockroachdb_install:
     - source: {{ config.download_url }}
     - options: --strip-components 1
     - enforce_toplevel: False
-    - user: {{ config.user }}
-    - group: {{ config.group }}
+    - user: {{ config.ps.user }}
+    - group: {{ config.ps.group }}
     - enforce_ownership_on: {{ config.home_dir }}
     - skip_verify: True
     - makedirs: True
 
+cockroachdb_post_start:
+  file.managed:
+    - name: {{ config.home_dir }}/post_start.sh
+    - source: {{ config.ps.post_start_tmpl }}
+    - template: jinja
+    - user: {{ config.ps.user }}
+    - group: {{ config.ps.group }}
+    - mode: 0755
+
 cockroachdb_data_directory:
   file.directory:
     - name: {{ config.datadir }}
-    - user: {{ config.user }}
-    - group: {{ config.group }}
+    - user: {{ config.ps.user }}
+    - group: {{ config.ps.group }}
     - dir_mode: 755
     - makedirs: True
 
 cockroachdb_log_folder:
   file.directory:
     - name: {{ config.logdir }}
-    - user: {{ config.user }}
-    - group: {{ config.group }}
+    - user: {{ config.ps.user }}
+    - group: {{ config.ps.group }}
     - dir_mode: 755
     - makedirs: True
-
-cockroachdb_initdb_sh:
-  file.managed:
-    - name: {{ config.home_dir }}/initdb.sh
-    - source: salt://cockroachdb/scripts/initdb.sh
-    - template: jinja
-    - user: {{ config.user }}
-    - group: {{ config.group }}
-    - mode: 0755
-
-cockroachdb_initdb_sql:
-  file.managed:
-    - name: {{ config.home_dir }}/initdb.sql
-    - source: salt://cockroachdb/scripts/initdb.sql
-    - user: {{ config.user }}
-    - group: {{ config.group }}
 
 cockroachdb_unit_file:
   file.managed:
     - name: /etc/systemd/system/cockroachdb.service
-    - source: salt://cockroachdb/scripts/cockroachdb.service
-    - user: {{ config.user }}
-    - group: {{ config.group }}
+    - source: {{ config.ps.unit_file_tmpl }}
+    - user: {{ config.ps.user }}
+    - group: {{ config.ps.group }}
     - template: jinja
+    - watch_in:
+      - cockroachdb_service
 
 cockroachdb_service:
   service.running:
     - name: cockroachdb
     - enable: True
-    - watch:
-      - cockroachdb_unit_file
-      - cockroachdb_initdb_sh

@@ -14,17 +14,17 @@ describe 'Pillar source: pillar.example' do
 
   context 'Given dbuser: devroach' do
     describe command('cockroach sql -e "SHOW USERS" --format=tsv') do
-      its(:stdout) { should contain 'devroach' }
+      its(:stdout) { should contain 'maxroach' }
     end
   end
 
   context 'Given database: devroach' do
     describe command('cockroach sql -e "SHOW DATABASES" --format=tsv') do
-      its(:stdout) { should contain 'devroach_sandbox' }
+      its(:stdout) { should contain 'maxroachdb' }
     end
   end
 
-  context 'Given keep_initdb_sql: false' do
+  context 'Given keep: false' do
     describe file('/opt/cockroachdb/initdb.sql') do
       it { should_not exist }
     end

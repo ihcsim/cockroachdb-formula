@@ -9,13 +9,15 @@
 {% endif -%}
 cockroachdb:
   initdb:
-    dbuser: devroach
-    database: devroach_sandbox
+    user: maxroach
+    database: maxroachdb
 
-    # Set keep_initdb_sql to true to keep the user-provided scripts/initdb.sql script after the first start-up.
-    # If this script shouldn't be re-executed on restart, set keep_initdb_sql to false to delete it from the minion
-    # filesystem after the first start-up.
-    keep_initdb_sql: false
+    sql:
+      script: salt://cockroachdb/files/initdb.sql
+
+      # Set 'keep' to true to keep the user-provided SQL script after the first start-up.
+      # If this script shouldn't be re-executed on restart, set 'keep' to false to delete it from the minion's filesystem after the first start-up.
+      keep: false
 
   runtime_options:
     - --insecure=true

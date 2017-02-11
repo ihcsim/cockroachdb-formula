@@ -4,10 +4,10 @@
 
 cockroachdb_user:
   user.present:
-    - name: {{ config.user }}
+    - name: {{ config.ps.user }}
 
 cockroachdb_group:
   group.present:
-    - name: {{ config.group }}
+    - name: {{ config.ps.group }}
     - addusers:
-      - {{ config.user }}
+      - {{ config.ps.user }}

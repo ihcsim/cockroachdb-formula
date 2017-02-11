@@ -19,7 +19,7 @@ describe 'InitDB' do
 
   context 'Given database: oldroach_sandbox' do
     describe command('cockroach sql -e "SHOW DATABASES" --format=tsv') do
-      its(:stdout) { should contain 'oldroach_sandbox' }
+      its(:stdout) { should contain 'oldroachdb' }
     end
   end
 
@@ -29,12 +29,12 @@ describe 'InitDB' do
     end
   end
 
-  context 'Given scripts/initdb.sql with sample test data' do
-    describe command('cockroach sql --user oldroach --database oldroach_sandbox -e "SHOW TABLES" --format=tsv') do
+  context 'Given SQL script at cockroachdb/files/initdb.sql' do
+    describe command('cockroach sql --user oldroach --database oldroachdb -e "SHOW TABLES" --format=tsv') do
       its(:stdout) { should contain 'customers' }
     end
 
-    describe command('cockroach sql --user oldroach --database oldroach_sandbox -e "SELECT * FROM customers" --format=tsv') do
+    describe command('cockroach sql --user oldroach --database oldroachdb -e "SELECT * FROM customers" --format=tsv') do
       its(:stdout) { should contain '3 rows' }
       its(:stdout) { should contain '1000\tJohn\tSmith\n1001\tBarbara\tLee\n1002\tAlbert\tKrahn\n' }
     end
