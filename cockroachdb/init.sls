@@ -50,7 +50,7 @@ cockroachdb_unit_file:
     - group: {{ config.ps.group }}
     - template: jinja
     - watch_in:
-      - cockroachdb_service
+      - service: cockroachdb_service
 
 cockroachdb_service:
   service.running:
