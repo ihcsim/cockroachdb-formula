@@ -1,0 +1,14 @@
+{% set ipv4_addrs = {'private':'127.0.0.1', 'public':'127.0.0.1'} -%}
+{% for ipv4_addr in salt['grains.get']('ipv4', '127.0.0.1') -%}
+  {% if salt['network.is_private'](ipv4_addr) and not salt['network.is_loopback'](ipv4_addr) %}
+    {% do ipv4_addrs.update({'private': ipv4_addr}) %}
+  {% endif %}
+{% endfor -%}
+cockroachdb:
+  runtime_options:
+    - --join=192.168.50.11
+    - --insecure=true
+    - --host={{ ipv4_addrs['private'] }}
+    - --port=26257
+    - --store=path=/opt/cockroachdb/data
+    - --log-dir=/opt/cockroachdb/log

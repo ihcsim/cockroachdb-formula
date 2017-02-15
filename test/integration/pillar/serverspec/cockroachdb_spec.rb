@@ -12,13 +12,13 @@ describe 'Pillar source: pillar.example' do
 
   set :env, :COCKROACH_INSECURE => 'true', :COCKROACH_HOST => ENV['ipv4_private'], :COCKROACH_PORT => '26300'
 
-  context 'Given dbuser: devroach' do
+  context 'Given dbuser: maxroach' do
     describe command('cockroach sql -e "SHOW USERS" --format=tsv') do
       its(:stdout) { should contain 'maxroach' }
     end
   end
 
-  context 'Given database: devroach' do
+  context 'Given database: maxroachdb' do
     describe command('cockroach sql -e "SHOW DATABASES" --format=tsv') do
       its(:stdout) { should contain 'maxroachdb' }
     end
@@ -33,6 +33,14 @@ describe 'Pillar source: pillar.example' do
   context 'Given a list of runtime_options' do
     describe process('cockroach') do
       its(:args) { should contain "--insecure=true --host=#{ENV['ipv4_private']} --port=26300 --http-host=#{ENV['ipv4_public']} --http-port=7070 --store=path=/etc/cockroachdb/data --log-dir=/var/log/cockroachdb" }
+    end
+
+    describe port(26300) do
+      it { should be_listening }
+    end
+
+    describe port(7070) do
+      it { should be_listening }
     end
 
     describe file('/etc/cockroachdb/data') do

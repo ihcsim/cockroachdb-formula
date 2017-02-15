@@ -26,6 +26,7 @@ cockroachdb_post_start:
     - group: {{ config.ps.group }}
     - mode: 0755
 
+{% if config.datadir is defined %}
 cockroachdb_data_directory:
   file.directory:
     - name: {{ config.datadir }}
@@ -33,7 +34,9 @@ cockroachdb_data_directory:
     - group: {{ config.ps.group }}
     - dir_mode: 755
     - makedirs: True
+{% endif %}
 
+{% if config.logdir is defined %}
 cockroachdb_log_folder:
   file.directory:
     - name: {{ config.logdir }}
@@ -41,6 +44,7 @@ cockroachdb_log_folder:
     - group: {{ config.ps.group }}
     - dir_mode: 755
     - makedirs: True
+{% endif %}
 
 cockroachdb_unit_file:
   file.managed:
@@ -50,7 +54,7 @@ cockroachdb_unit_file:
     - group: {{ config.ps.group }}
     - template: jinja
     - watch_in:
-      - cockroachdb_service
+      - service: cockroachdb_service
 
 cockroachdb_service:
   service.running:

@@ -12,10 +12,7 @@ end
 
 driver:
   name: <%= driver %>
-  <% if driver == driver_vagrant %>
-  network:
-    - ["private_network", {ip: "192.168.50.11"}]
-  <% elsif driver == driver_digitalocean %>
+  <% if driver == driver_digitalocean %>
   region: sfo1
   size: 1gb
   image: ubuntu-16-04-x64
