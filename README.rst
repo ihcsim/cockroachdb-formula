@@ -32,9 +32,10 @@ This state installs a single instance of CockroachDB on a minion. All supported 
 
 The ``cockroachdb/scripts/default.yml`` file contains a set of default values that can be overridden using pillar data.
 
-To start a [cluster](https://www.cockroachlabs.com/docs/start-a-local-cluster.html), provide the `--join` flag to the ``cockroachdb.runtime_options`` pillar. For example to start a cluster of 3 instances, namely, ``db-01``, ``db-02``, ``db-03``) and run a user-provided ``initdb.sql`` SQL script,
+To start a `cluster <https://www.cockroachlabs.com/docs/start-a-local-cluster.html>`_, provide the ``--join`` flag to the ``cockroachdb.runtime_options`` pillar. The following example states and pillar starts a cluster of 3 instances, namely, ``db-01``, ``db-02``, ``db-03`` and run a user-provided ``initdb.sql`` SQL script.
 
 ``salt/top.sls``
+
 .. code:: yaml
 
   base:
@@ -44,6 +45,7 @@ To start a [cluster](https://www.cockroachlabs.com/docs/start-a-local-cluster.ht
       - cockroachdb
 
 ``pillar/top.sls``
+
 .. code:: yaml
 
   base:
@@ -54,13 +56,15 @@ To start a [cluster](https://www.cockroachlabs.com/docs/start-a-local-cluster.ht
 
 ``pillar/cockroachdb/initdb.sls``
 
+.. code:: jinja
+
   {% set ipv4_addrs = {'private':'127.0.0.1', 'public':'127.0.0.1'} -%}
   {% for ipv4_addr in salt['grains.get']('ipv4', '127.0.0.1') -%}
-    {% if salt['network.is_private'](ipv4_addr) %}
-      {% do ipv4_addrs.update({'private': ipv4_addr}) %}
-    {% elif not salt['network.is_private']('ipv4_addr') and not salt['network.is_loopback']('ipv4_addr') %}
-      {% do ipv4_addrs.update({'public': ipv4_addr}) %}
-    {% endif %}
+    {% if salt['network.is_private'](ipv4_addr) if not salt['network.is_loopback']('ipv4_addr') -%}
+      {% do ipv4_addrs.update({'private': ipv4_addr}) -%}
+    {% elif not salt['network.is_private']('ipv4_addr') -%}
+      {% do ipv4_addrs.update({'public': ipv4_addr}) -%}
+    {% endif -%}
   {% endfor -%}
   cockroachdb:
     initdb:
@@ -71,31 +75,33 @@ To start a [cluster](https://www.cockroachlabs.com/docs/start-a-local-cluster.ht
         script: salt://cockroachdb/files/initdb.sql
         keep: false
 
-		runtime_options:
-			- --insecure=true
-			- --host={{ ipv4_addrs['private'] }}
-			- --port=26257
-			- --http-host={{ ipv4_addrs['public'] }}
-			- --http-port=7070
-			- --store=path=/etc/cockroachdb/data
-			- --log-dir=/var/log/cockroachdb
+    runtime_options:
+      - --insecure=true
+      - --host={{ ipv4_addrs['private'] }}
+      - --port=26257
+      - --http-host={{ ipv4_addrs['public'] }}
+      - --http-port=7070
+      - --store=path=/etc/cockroachdb/data
+      - --log-dir=/var/log/cockroachdb
 
 ``pillar/cockroachdb/cluster.sls``
 
-	{% set ipv4_addrs = {'private':'127.0.0.1', 'public':'127.0.0.1'} -%}
-	{% for ipv4_addr in salt['grains.get']('ipv4', '127.0.0.1') -%}
-		{% if salt['network.is_private'](ipv4_addr) %}
-			{% do ipv4_addrs.update({'private': ipv4_addr}) %}
-		{% endif %}
-	{% endfor -%}
-	cockroachdb:
-		runtime_options:
-			- --join=<db-01-static-ipv4-address>
-			- --insecure=true
-			- --host={{ ipv4_addrs['private'] }}
-			- --port=26257
-			- --store=path=/opt/cockroachdb/data
-			- --log-dir=/opt/cockroachdb/log
+.. code:: jinja
+
+  {% set ipv4_addrs = {'private':'127.0.0.1', 'public':'127.0.0.1'} -%}
+  {% for ipv4_addr in salt['grains.get']('ipv4', '127.0.0.1') -%}
+    {% if salt['network.is_private'](ipv4_addr) and not salt['network.is_loopback']('ipv4_addr') -%}
+      {% do ipv4_addrs.update({'private': ipv4_addr}) -%}
+    {% endif -%}
+  {% endfor -%}
+  cockroachdb:
+    runtime_options:
+      - --join=<db-01-static-ipv4-address>
+      - --insecure=true
+      - --host={{ ipv4_addrs['private'] }}
+      - --port=26257
+      - --store=path=/opt/cockroachdb/data
+      - --log-dir=/opt/cockroachdb/log
 
 ``cockroachdb.initdb``
 ----------------------
