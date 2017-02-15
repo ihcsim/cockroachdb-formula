@@ -1,12 +1,11 @@
-{% set ipv4_public = '127.0.0.1' -%}
-{% if salt.network.ipaddrs(type='public') | length > 0 -%}
-  {% set ipv4_public = salt.network.ipaddrs(type='public') | first -%}
-{% endif -%}
-
-{% set ipv4_private = '127.0.0.1' -%}
-{% if salt.network.ipaddrs(type='private') | length > 0 -%}
-  {% set ipv4_private = salt.network.ipaddrs(type='private') | first -%}
-{% endif -%}
+{% set ipv4_addrs = {'private':'127.0.0.1', 'public':'127.0.0.1'} -%}
+{% for ipv4_addr in salt['grains.get']('ipv4', '127.0.0.1') -%}
+  {% if salt['network.is_private'](ipv4_addr) %}
+    {% do ipv4_addrs.update({'private': ipv4_addr}) %}
+  {% elif not salt['network.is_private']('ipv4_addr') and not salt['network.is_loopback']('ipv4_addr') %}
+    {% do ipv4_addrs.update({'public': ipv4_addr}) %}
+  {% endif %}
+{% endfor -%}
 cockroachdb:
   initdb:
     user: maxroach

@@ -32,6 +32,71 @@ This state installs a single instance of CockroachDB on a minion. All supported 
 
 The ``cockroachdb/scripts/default.yml`` file contains a set of default values that can be overridden using pillar data.
 
+To start a [cluster](https://www.cockroachlabs.com/docs/start-a-local-cluster.html), provide the `--join` flag to the ``cockroachdb.runtime_options`` pillar. For example to start a cluster of 3 instances, namely, ``db-01``, ``db-02``, ``db-03``) and run a user-provided ``initdb.sql`` SQL script,
+
+``salt/top.sls``
+.. code:: yaml
+
+  base:
+    'db-01':
+      - cockroachdb.initdb
+    'not db-01':
+      - cockroachdb
+
+``pillar/top.sls``
+.. code:: yaml
+
+  base:
+    'db-01':
+      - cockroachdb.initdb
+    'not db-01':
+      - cockroachdb.cluster
+
+``pillar/cockroachdb/initdb.sls``
+
+  {% set ipv4_addrs = {'private':'127.0.0.1', 'public':'127.0.0.1'} -%}
+  {% for ipv4_addr in salt['grains.get']('ipv4', '127.0.0.1') -%}
+    {% if salt['network.is_private'](ipv4_addr) %}
+      {% do ipv4_addrs.update({'private': ipv4_addr}) %}
+    {% elif not salt['network.is_private']('ipv4_addr') and not salt['network.is_loopback']('ipv4_addr') %}
+      {% do ipv4_addrs.update({'public': ipv4_addr}) %}
+    {% endif %}
+  {% endfor -%}
+  cockroachdb:
+    initdb:
+      user: maxroach
+      database: maxroachdb
+
+      sql:
+        script: salt://cockroachdb/files/initdb.sql
+        keep: false
+
+		runtime_options:
+			- --insecure=true
+			- --host={{ ipv4_addrs['private'] }}
+			- --port=26257
+			- --http-host={{ ipv4_addrs['public'] }}
+			- --http-port=7070
+			- --store=path=/etc/cockroachdb/data
+			- --log-dir=/var/log/cockroachdb
+
+``pillar/cockroachdb/cluster.sls``
+
+	{% set ipv4_addrs = {'private':'127.0.0.1', 'public':'127.0.0.1'} -%}
+	{% for ipv4_addr in salt['grains.get']('ipv4', '127.0.0.1') -%}
+		{% if salt['network.is_private'](ipv4_addr) %}
+			{% do ipv4_addrs.update({'private': ipv4_addr}) %}
+		{% endif %}
+	{% endfor -%}
+	cockroachdb:
+		runtime_options:
+			- --join=<db-01-static-ipv4-address>
+			- --insecure=true
+			- --host={{ ipv4_addrs['private'] }}
+			- --port=26257
+			- --store=path=/opt/cockroachdb/data
+			- --log-dir=/opt/cockroachdb/log
+
 ``cockroachdb.initdb``
 ----------------------
 This state initializes the CockroachDB instance with a user-provided superuser and its database. In addition, a user-provided SQL script located at ``cockroachdb.initdb.sql.script`` is executed on-start. The following pillar instructs CockroachDB to create a superuser ``maxroach`` and its database ``maxroachdb`` after the instance is started successfully. Any SQL queries provided at ``cockroachdb/files/queries.sql`` will be also run after the instance is ready.
@@ -42,7 +107,7 @@ This state initializes the CockroachDB instance with a user-provided superuser a
     initdb:
       dbuser: maxroach
       database: maxroachdb
-      
+
       sql:
         script: salt://cockroachdb/files/queries.sql
 
