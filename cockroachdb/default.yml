@@ -10,8 +10,4 @@ cockroachdb:
     post_start_tmpl: salt://cockroachdb/files/post_start.sh
 
   runtime_options:
-    - --insecure=true
-    - --host=localhost
-    - --port=26257
-    - --store=path=/opt/cockroachdb/data
-    - --log-dir=/opt/cockroachdb/log
+    - --store=path=/cockroachdb-data

@@ -13,15 +13,18 @@ describe 'Pillar source: cockroachdb/default.yml' do
     describe process('cockroach') do
       its(:user) { should eq 'cockroach' }
       its(:group) { should eq 'cockroach' }
-      its(:args) { should contain '--insecure=true --host=localhost --port=26257 --store=path=/opt/cockroachdb/data --log-dir=/opt/cockroachdb/log' }
+      its(:args) { should contain '--store=path=/cockroachdb-data' }
     end
 
-    describe file('/opt/cockroachdb/data') do
-      it { should be_a_directory }
-      it { should be_owned_by 'cockroach' }
+    describe port(26257) do
+      it { should be_listening }
     end
 
-    describe file('/opt/cockroachdb/log') do
+    describe port(8080) do
+      it { should be_listening }
+    end
+
+    describe file('/cockroachdb-data') do
       it { should be_a_directory }
       it { should be_owned_by 'cockroach' }
     end
