@@ -1,8 +1,8 @@
 ===========
 CockroachDB
 ===========
-.. image:: https://app.codeship.com/projects/94529550-d1e9-0134-7c93-0275da32878f/status?branch=master
-  :target: https://app.codeship.com/projects/201690)
+.. image:: https://app.codeship.com/projects/fcaedd30-d7c1-0134-f965-4e471868a2e5/status?branch=master
+  :target: https://app.codeship.com/projects/203122
 
 Formula to install and configure `CockroachDB <https://github.com/cockroachdb/cockroach>`_.
 

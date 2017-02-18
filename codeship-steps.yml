@@ -1,9 +1,0 @@
-- type: parallel
-  service: kitchen_salt_with_digitalocean_driver
-  steps:
-    - name: default_suite
-      command: /usr/src/app/ci/run_specs.sh default-ubuntu-xenial64
-    - name: pillar_suite
-      command: /usr/src/app/ci/run_specs.sh pillar-ubuntu-xenial64
-    - name: initdb_suite
-      command: /usr/src/app/ci/run_specs.sh initdb-ubuntu-xenial64
